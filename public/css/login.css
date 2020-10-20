@@ -1,0 +1,44 @@
+body {
+  margin: 0;
+  position: relative;
+}
+
+.container-spec {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 100%;
+  justify-items: center;
+  align-items: center;
+}
+
+.login-div {
+  position: relative;
+  width: 40%;
+  margin: auto;
+}
+
+.login-div > h2 {
+  text-align: center;
+}
+
+.login-div > button {
+  display: block;
+  margin: 20px auto;
+}
+
+.mess {
+  display: none;
+  color: green;
+  text-align: center;
+  margin: 10px 0;
+}
+
+.error {
+  color: red;
+}
+
+.show {
+  display: block;
+}

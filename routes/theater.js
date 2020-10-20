@@ -1,0 +1,45 @@
+const express = require('express')
+const mongoose = require('mongoose')
+const Theater = require('../models/Theater')
+const { route } = require('./movie')
+const auth = require('./verify');
+const router = express.Router()
+
+router.post('/', auth, async (req, res) => {
+    let screensInfo = [];
+
+    req.body.screens.forEach(ele => {
+        screensInfo.push({ name: ele.name, seats: ele.seats });
+    });
+
+    const theater = new Theater({
+        name: req.body.name,
+        type: req.body.type,
+        location: req.body.location,
+        screens: screensInfo
+    })
+
+    try {
+        const savedTheater = await theater.save()
+        res.status(200)
+        res.send(savedTheater)
+    }
+    catch (err) {
+        res.status(500)
+        res.send(err)
+    }
+})
+
+router.get('/', auth, async (req, res) => {
+    try {
+        const theaters = await Theater.find()
+        res.status(200)
+        res.json(theaters)
+    }
+    catch (err) {
+        res.status(500)
+        res.json(err)
+    }
+})
+
+module.exports = router;

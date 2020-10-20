@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+    <link rel="stylesheet" href="./css/login.css" />
+  </head>
+  <body>
+    <div class="container-spec">
+      <div class="login-div">
+        <h2>Login</h2>
+        <p class="mess"></p>
+        <div class="input-field col s6">
+          <input id="email" type="text" class="validate" />
+          <label for="email">Email</label>
+        </div>
+        <div class="input-field col s6">
+          <input id="pass" type="text" class="validate" />
+          <label for="pass">Password</label>
+        </div>
+        <button
+          onclick="login()"
+          class="btn waves-effect waves-light"
+          type="submit"
+          name="action"
+        >
+          Login
+          <i class="material-icons right">send</i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="./js/api.js"></script>
+    <script>
+      let login = () => {
+        let emailv = document.querySelector("#email");
+        let passv = document.querySelector("#pass");
+        let ok = true;
+        let errorDiv = document.querySelector(".mess");
+        errorDiv.classList.remove("error");
+        errorDiv.classList.remove("show");
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+        var raw = JSON.stringify({
+          email: emailv.value,
+          password: passv.value,
+        });
+
+        var requestOptions = {
+          method: "POST",
+          headers: myHeaders,
+          body: raw,
+          redirect: "follow",
+        };
+
+        fetch(api + "/customer/login", requestOptions)
+          .then((response) => {
+            if (!response.ok) {
+              ok = false;
+            }
+            return response.json();
+          })
+          .then((result) => {
+            console.log(result);
+            if (!ok) {
+              throw result;
+            }
+            errorDiv.innerHTML = "Logged In!";
+            errorDiv.classList.add("show");
+            localStorage.setItem("token", result["token"]);
+            location.href = "./shows.html";
+          })
+          .catch((error) => {
+            console.log("error", error);
+            errorDiv.classList.add("error");
+            errorDiv.innerHTML = error["message"];
+            errorDiv.classList.add("show");
+          });
+      };
+    </script>
+  </body>
+</html>

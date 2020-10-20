@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+    <link rel="stylesheet" href="./css/shows.css" />
+  </head>
+  <body>
+    <div class="container-spec">
+      <div class="shows">
+        <h1>Shows</h1>
+        <table class="highlight centered">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Language</th>
+              <th>Date</th>
+              <th>Theater</th>
+              <th>Book</th>
+            </tr>
+          </thead>
+
+          <tbody class="shows-deets"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="./js/api.js"></script>
+    <script>
+      let renderShows = (data) => {
+        let showDiv = document.querySelector(".shows-deets");
+        data.forEach((ele) => {
+          let tr = document.createElement("tr");
+          tr.innerHTML = `
+                <td>${ele.movie.name}</td>
+                <td>${ele.movie.lang}</td>
+                <td>${ele.s_date.split("T")[0]}</td>
+                <td>${ele.theater.name}</td>
+                <td><a onclick="location.href = './show.html?id=${
+                  ele._id
+                }'" class="waves-effect waves-light btn">Book</a></td>
+                `;
+          showDiv.appendChild(tr);
+        });
+      };
+
+      var myHeaders = new Headers();
+      myHeaders.append("token", localStorage.getItem("token"));
+
+      var requestOptions = {
+        method: "GET",
+        headers: myHeaders,
+        redirect: "follow",
+      };
+
+      fetch(api + "/show", requestOptions)
+        .then((response) => response.json())
+        .then((result) => {
+          console.log(result);
+          renderShows(result);
+        })
+        .catch((error) => console.log("error", error));
+    </script>
+  </body>
+</html>
