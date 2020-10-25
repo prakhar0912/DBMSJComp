@@ -1,0 +1,76 @@
+* {
+  font-family: "Montserrat", sans-serif;
+}
+
+body {
+  margin: 0;
+  position: relative;
+}
+
+.container-spec {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.tickets {
+  position: relative;
+  width: 90%;
+  padding: 10px 0;
+  margin: auto;
+}
+
+.tickets > h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: rgb(64, 91, 246);
+  font-size: 2.5rem;
+}
+
+.ticket {
+  font: inherit !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, 33.33%);
+  justify-items: center;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.ac {
+  border: none !important;
+  border-bottom: 1px black solid !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.ticket > p {
+  pointer-events: none;
+}
+
+.ac {
+  border: none;
+}
+
+.ticket-deets {
+  position: relative;
+  display: grid !important;
+  grid-template-columns: 70% 30%;
+}
+
+.ticket-deets > div {
+  padding: 20px 40px;
+}
+
+.ticket-deets > .left > p {
+  font: inherit !important;
+  padding: 0 !important;
+}
+
+.ticket-deets > .right {
+  align-self: center;
+  justify-items: right;
+}
+
+.ticket-deets > .right > button {
+  cursor: pointer;
+}

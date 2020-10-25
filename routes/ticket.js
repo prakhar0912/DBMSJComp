@@ -38,7 +38,6 @@ router.post('/', auth, async (req, res) => {
         return
     }
 
-    resShow.screens[screenIndex].f_seats.splice(seatIndex, 1)
 
     const ticket = new Ticket({
         show: resShow,
@@ -46,15 +45,17 @@ router.post('/', auth, async (req, res) => {
         screen: {
             sc: req.body.screen.sc,
             st: req.body.screen.st
-        }
+        },
+        date: new Date()
     })
 
     try {
         const resCustomer = await Customer.findById(req.user._id)
-        const savedShow = await resShow.save()
         const savedTicket = await ticket.save()
+        resShow.screens[screenIndex].f_seats.splice(seatIndex, 1)
+        await resShow.save()
         resCustomer.tickets.push(savedTicket._id)
-        const savedCustomer = await resCustomer.save()
+        await resCustomer.save()
         res.status(200)
         res.json(savedTicket)
     }

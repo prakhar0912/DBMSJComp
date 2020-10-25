@@ -47,10 +47,6 @@ const ShowSchema = mongoose.Schema({
         type: Date,
         required: true
     },
-    screens: [{
-        name: String,
-        f_seats: [Number]
-    }]
 })
 
 const TicketSchema = mongoose.Schema({
@@ -65,10 +61,6 @@ const TicketSchema = mongoose.Schema({
     screen: {
         sc: String,
         st: Number
-    },
-    payment: {
-        type: Boolean,
-        required: true
     },
     date: {
         type: Date,

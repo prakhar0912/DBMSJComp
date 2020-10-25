@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/accordion-js@2.8.0/dist/accordion.min.css">
+    <link rel="stylesheet" href="./css/mytickets.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container-spec">
+        <div class="tickets">
+            <h2>My Tickets</h2>
+            <div class="ticket">
+                <h2>Movie</h2>
+                <h2>Theater</h2>
+                <h2>Date</h2>
+            </div>
+            <div class="ticks">
+                
+            </div>
+        </div>
+    </div>
+    <script src="./js/api.js"></script>
+    <script src="https://unpkg.com/accordion-js@2.8.0/dist/accordion.min.js"></script>
+    <script>
+        
+        let deleteTicket = (id) => {
+            var myHeaders = new Headers();
+            myHeaders.append("token", localStorage.getItem('token'));
+
+            var requestOptions = {
+                method: 'DELETE',
+                headers: myHeaders,
+                redirect: 'follow'
+            };
+
+            fetch(api+"/ticket/delete?id="+id, requestOptions)
+                .then(response => response.json())
+                .then(result => {
+                    console.log(result)
+                    getTickets()
+                })
+                .catch(error => console.log('error', error));
+        }
+
+
+        let ticksDiv = document.querySelector('.ticks')
+        let renderTickets = (data) => {
+            ticksDiv.innerHTML = ""
+            for(let i = 0; i < data.length; i++){
+                ticksDiv.innerHTML += `
+                <div class="ac">
+                    <div class="ac-q ticket" tabindex="0">
+                        <p>${data[i].show.movie.name}</p>
+                        <p>${data[i].show.theater.name}</p>
+                        <p>${data[i].show.s_date}</p>
+                    </div>
+                    <div class="ac-a ticket-deets">
+                        <div class="left">
+                            <h3>Location</h3>
+                            <p>${data[i].show.theater.location}</p>
+                            <h3>Screen</h3>
+                            <p>${data[i].screen.sc}</p>
+                            <h3>Seat</h3>
+                            <p>${data[i].screen.st}</p>
+                        </div>
+                        <div class="right">
+                            <button onclick = "deleteTicket('${data[i]._id}')">Delete</button>
+                        </div>
+                    </div>
+                </div>
+                `
+            }
+
+            new Accordion('.ticks')
+        }
+
+        let getTickets = () => {
+            var myHeaders = new Headers();
+            myHeaders.append("token", localStorage.getItem('token'));
+
+            var requestOptions = {
+                method: 'GET',
+                headers: myHeaders,
+                redirect: 'follow'
+            };
+
+            fetch(api + "/customer/tickets", requestOptions)
+                .then(response => response.json())
+                .then(result => {
+                    console.log(result)
+                    renderTickets(result)
+                })
+                .catch(error => console.log('error', error));
+        }
+
+        getTickets()
+    </script>
+</body>
+</html>

@@ -1,6 +1,5 @@
 const express = require('express')
-const mongoose = require('mongoose')
-const Theater = require('../models/Theater')
+// const mongoose = require('mongoose')
 const Movie = require('../models/Movie')
 const { adminAuth } = require('./verify');
 const router = express.Router()
