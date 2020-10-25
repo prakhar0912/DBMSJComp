@@ -1,48 +1,42 @@
 const express = require('express')
 const mongoose = require('mongoose')
-const Customer = require('../models/Customer')
-const Ticket = require('../models/Ticket')
-const { auth } = require('./verify');
+const Admin = require('../models/Admin')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const router = express.Router()
 
 //Validation
-const { registerValidation, loginValidation } = require('../validation')
+const { adminValidation } = require('../validation')
 
 
 
 router.post('/register', async (req, res) => {
 
 
-    const { error } = registerValidation(req.body)
+    const { error } = adminValidation(req.body)
 
     if (error) {
         return res.json({ message: error.details[0].message })
     }
 
-    const emailExists = await Customer.findOne({ email: req.body.email })
+    const emailExists = await Admin.findOne({ email: req.body.email })
 
     if (emailExists) {
         res.status(400)
         return res.json({ message: "Email Already Exists!" })
     }
 
-    // const salt = await bcrypt.gentSalt(10)
     const hashPassword = await bcrypt.hash(req.body.password, 10, null)
 
-    const customer = new Customer({
+    const admin = new Admin({
         email: req.body.email,
         password: hashPassword,
-        sex: req.body.sex,
-        name: req.body.name,
-        dob: new Date(req.body.dob)
     })
 
     try {
-        const savedCustomer = await customer.save()
+        const savedAdmin = await admin.save()
         res.status(200)
-        res.json(savedCustomer)
+        res.json(savedAdmin)
     }
     catch (err) {
         res.status(500)
@@ -50,41 +44,31 @@ router.post('/register', async (req, res) => {
     }
 })
 
-
-router.get('/tickets', auth, async (req, res) => {
-    try {
-        const tickets = await Ticket.find({ customer: req.user._id })
-        res.status(200)
-        res.json(tickets)
-    }
-    catch (err) {
-        res.status(500)
-        res.json(err)
-    }
-})
 
 
 router.post('/login', async (req, res) => {
-    const { error } = loginValidation(req.body)
+    const { error } = adminValidation(req.body)
 
     if (error) {
         return res.status(400).json({ message: error.details[0].message })
     }
 
-    const customer = await Customer.findOne({ email: req.body.email })
+    const admin = await Admin.findOne({ email: req.body.email })
 
-    if (!customer) {
+    if (!admin) {
         res.status(400)
         return res.json({ message: "Email Doesn't Exist!" })
     }
 
-    const validPass = await bcrypt.compare(req.body.password, customer.password)
+    const validPass = await bcrypt.compare(req.body.password, admin.password)
+
     console.log(validPass)
     if (!validPass) {
         res.status(400)
         return res.json({ message: "Wrong Password!" })
     }
-    const token = jwt.sign({ _id: customer._id }, process.env.TOKEN_SECRET);
+
+    const token = jwt.sign({ _id: admin._id }, process.env.ADMIN_SECRET);
 
     res.header('token', token)
     res.status(200).json({ token: token })
@@ -92,9 +76,9 @@ router.post('/login', async (req, res) => {
 
 router.get('/', async (req, res) => {
     try {
-        const customers = await Customer.find()
+        const admins = await Admin.find()
         res.status(200)
-        res.json(customers)
+        res.json(admins)
     }
     catch (err) {
         res.status(500)

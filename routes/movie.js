@@ -2,10 +2,14 @@ const express = require('express')
 const mongoose = require('mongoose')
 const Theater = require('../models/Theater')
 const Movie = require('../models/Movie')
-const auth = require('./verify');
+const { adminAuth } = require('./verify');
 const router = express.Router()
 
-router.post('/', auth, async (req, res) => {
+router.post('/', adminAuth, async (req, res) => {
+
+    if (req.body.rating > 10) {
+        res.status(400).json({ message: "Rating has to be out of 10!" })
+    }
 
     const movie = new Movie({
         name: req.body.name,
@@ -16,15 +20,15 @@ router.post('/', auth, async (req, res) => {
     try {
         const savedMovie = await movie.save()
         res.status(200)
-        res.send(savedMovie)
+        res.json(savedMovie)
     }
     catch (err) {
         res.status(500)
-        res.send(err)
+        res.json(err)
     }
 })
 
-router.get('/', async (req, res) => {
+router.get('/', adminAuth, async (req, res) => {
     try {
         const movies = await Movie.find()
         res.status(200)

@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const Ticket = require('../models/Ticket')
 const Show = require('../models/Show')
 const Customer = require('../models/Customer')
-const auth = require('./verify');
+const { auth, adminAuth } = require('./verify');
 const router = express.Router()
 
 router.post('/', auth, async (req, res) => {
@@ -64,7 +64,19 @@ router.post('/', auth, async (req, res) => {
     }
 })
 
-router.get('/', auth, async (req, res) => {
+router.delete('/delete', auth, async (req, res) => {
+    try {
+        const tickets = await Ticket.findByIdAndDelete(req.query.id)
+        res.status(200)
+        res.json(tickets)
+    }
+    catch (err) {
+        res.status(500)
+        res.json({ message: err })
+    }
+})
+
+router.get('/', adminAuth, async (req, res) => {
     try {
         const tickets = await Ticket.findById(req.user._id)
         res.status(200)

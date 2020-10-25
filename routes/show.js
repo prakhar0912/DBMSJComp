@@ -3,10 +3,10 @@ const mongoose = require('mongoose')
 const Theater = require('../models/Theater')
 const Show = require('../models/Show')
 const Movie = require('../models/Movie')
-const auth = require('./verify')
+const { auth, adminAuth } = require('./verify')
 const router = express.Router()
 
-router.post('/', auth, async (req, res) => {
+router.post('/', adminAuth, async (req, res) => {
     const resTheater = await Theater.findById(req.body.theater);
     const resMovie = await Movie.findById(req.body.movie);
 

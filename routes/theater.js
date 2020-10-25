@@ -2,10 +2,10 @@ const express = require('express')
 const mongoose = require('mongoose')
 const Theater = require('../models/Theater')
 const { route } = require('./movie')
-const auth = require('./verify');
+const { auth, adminAuth } = require('./verify');
 const router = express.Router()
 
-router.post('/', auth, async (req, res) => {
+router.post('/', adminAuth, async (req, res) => {
     let screensInfo = [];
 
     req.body.screens.forEach(ele => {
@@ -30,7 +30,7 @@ router.post('/', auth, async (req, res) => {
     }
 })
 
-router.get('/', auth, async (req, res) => {
+router.get('/', adminAuth, async (req, res) => {
     try {
         const theaters = await Theater.find()
         res.status(200)

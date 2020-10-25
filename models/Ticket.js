@@ -13,12 +13,6 @@ const TheaterSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    screens: [
-        {
-            name: String,
-            seats: Number
-        }
-    ]
 })
 
 const MovieSchema = mongoose.Schema({
@@ -71,6 +65,14 @@ const TicketSchema = mongoose.Schema({
     screen: {
         sc: String,
         st: Number
+    },
+    payment: {
+        type: Boolean,
+        required: true
+    },
+    date: {
+        type: Date,
+        required: true
     }
 })
 

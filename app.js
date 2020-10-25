@@ -9,6 +9,7 @@ const TheaterRoute = require('./routes/theater')
 const ShowRoute = require('./routes/show')
 const CustomerRoute = require('./routes/customer')
 const TicketRoute = require('./routes/ticket')
+const AdminRoute = require('./routes/admin')
 
 
 const app = express();
@@ -31,6 +32,7 @@ app.use('/theater', TheaterRoute)
 app.use('/show', ShowRoute)
 app.use('/customer', CustomerRoute)
 app.use('/ticket', TicketRoute)
+app.use('/admin', AdminRoute)
 
 
 console.log(new Date())
