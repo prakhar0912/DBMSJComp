@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
+    <title>Document</title>
+    <style>
+        .mess {
+            text-align: center;
+            color: green;
+            margin: 20px;
+            display: none;
+        }
+
+        .show {
+            display: block;
+        }
+
+        .err {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 style="color: lightcoral; text-align: center; margin: 50px 0 100px 0;">Add Theater</h1>
+        <p class="mess"></p>
+        <div class="form">
+            <p>Theater Name:</p>
+            <input type="text" placeholder="Name">
+            <p>Theater Type:</p>
+            <input type="text" placeholder="Type">
+            <p>Theater location:</p>
+            <input type="text" placeholder="Location">
+            <p>Number of Screens:</p>
+            <input type="number" placeholder="Number of Screens">
+            <p>Number of Seats per Screen:</p>
+            <input type="number" placeholder="Number of seats">
+        </div>
+        <a style="display: block; margin: 30px auto; width: 50%;" onclick="addTheater()"
+            class="waves-effect waves-light btn">Add Theater</a>
+    </div>
+    <script src="./js/api.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+
+        let mess = document.querySelector('.mess')
+        let inputs = document.querySelectorAll('input')
+        let addTheater = () => {
+            mess.classList.remove('show')
+            mess.classList.remove('err')
+
+            for (let i = 0; i < inputs.length; i++) {
+                if (inputs[i].value == "") {
+                    mess.innerHTML = `${inputs[i].placeholder} is required!`
+                    mess.classList.add('show')
+                    mess.classList.add('err')
+                    return
+                }
+            }
+
+            var myHeaders = new Headers();
+            myHeaders.append("token", localStorage.getItem('admin'));
+            myHeaders.append("Content-Type", "application/json");
+
+            let screens = []
+
+            for (let i = 0; i < parseInt(inputs[3].value); i++) {
+                screens.push({
+                    name: `Screen ${i + 1}`,
+                    seats: inputs[4].value
+                })
+            }
+
+            var raw = {
+                "name": inputs[0].value,
+                "type": inputs[1].value,
+                "location": inputs[2].value,
+                "screens": screens
+            };
+
+
+            console.log(raw)
+
+            var requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: JSON.stringify(raw),
+                redirect: 'follow'
+            };
+
+            fetch(api + "/theater", requestOptions)
+                .then(response => response.json())
+                .then(result => {
+                    console.log(result)
+                    mess.innerHTML = "Theater added!"
+                    mess.classList.add('show')
+                })
+                .catch(error => console.log('error', error));
+        }
+    </script>
+</body>
+
+</html>

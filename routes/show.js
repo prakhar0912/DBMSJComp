@@ -6,8 +6,11 @@ const Movie = require('../models/Movie')
 const { auth, adminAuth } = require('./verify')
 const router = express.Router()
 
+
 router.post('/', adminAuth, async (req, res) => {
+
     const resTheater = await Theater.findById(req.body.theater);
+
     const resMovie = await Movie.findById(req.body.movie);
 
     let errString = "";

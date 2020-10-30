@@ -67,9 +67,14 @@ router.post('/', auth, async (req, res) => {
 
 router.delete('/delete', auth, async (req, res) => {
     try {
-        const tickets = await Ticket.findByIdAndDelete(req.query.id)
+        const tickets = await Ticket.findById(req.query.id)
+        const show = await Show.findById(tickets.show._id)
+        let screenIndex = show.screens.findIndex(({ name }) => name == tickets.screen.sc)
+        show.screens[screenIndex].f_seats.push(tickets.screen.st)
+        await show.save()
+        const ticket = await Ticket.findByIdAndDelete(req.query.id)
         res.status(200)
-        res.json(tickets)
+        res.json(ticket)
     }
     catch (err) {
         res.status(500)

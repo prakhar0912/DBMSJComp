@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
+
+    <style>
+        :root {
+            --main-color: rgb(40, 131, 251);
+            --main-shadow: -5px -5px 10px rgba(255, 255, 255, 0.05),
+                5px 5px 15px rgba(0, 0, 0, 0.2);
+            --main-shadow-hover: inset -6px -6px 10px rgb(255, 255, 255),
+                inset 6px 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            font-family: "Montserrat", sans-serif;
+        }
+
+        body {
+            position: relative;
+            min-height: 100vh;
+        }
+
+        .container-spec {
+            position: relative;
+            display: grid;
+            grid-template-rows: repeat(3, auto);
+            width: 100%;
+        }
+
+        .container-spec>div {
+            position: relative;
+            min-height: 300px;
+            max-height: 300px;
+
+            width: 90%;
+            margin: 0 auto;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: var(--main-shadow);
+            overflow: scroll;
+        }
+
+        .container-spec>div>div {
+            width: 90%;
+            margin: auto;
+        }
+
+        .header {
+            font-weight: 600;
+        }
+
+        .one-content>div {
+            display: grid;
+            grid-template-columns: repeat(3, 33.33%);
+            justify-items: center;
+            border-bottom: 1px black solid;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .two-content>div {
+            display: grid;
+            grid-template-columns: repeat(3, 33.33%);
+            justify-items: center;
+            border-bottom: 1px black solid;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .three-content>h5 {
+            color: lightcoral;
+        }
+
+        .selected {
+            background-color: rgb(189, 189, 189);
+        }
+
+        .mess {
+            text-align: center;
+            color: green;
+            margin: 20px;
+            display: none;
+            font-size: 1.2rem;
+
+        }
+
+        .show {
+            display: block;
+        }
+
+        .err {
+            color: red;
+        }
+    </style>
+    <title>Document</title>
+</head>
+
+<body>
+    <h3 style="color: lightcoral; text-align: center; margin: 50px 0 100px 0;">Add Show</h3>
+    <div class="container-spec">
+        <div class="one">
+            <h3 style="color: rgb(40, 131, 251); text-align: center;">Select Movie</h3>
+            <div class="one-content">
+                <div class="header">
+                    <p>Name</p>
+                    <p>Language</p>
+                    <p>Select</p>
+                </div>
+            </div>
+        </div>
+        <div class="two">
+            <h3 style="color: rgb(40, 131, 251); text-align: center;">Select Theater</h3>
+            <div class="two-content">
+                <div class="header">
+                    <p>Name</p>
+                    <p>Location</p>
+                    <p>Select</p>
+                </div>
+
+            </div>
+        </div>
+        <div class="three">
+            <h3 style="color: rgb(40, 131, 251); text-align: center;">Create Show</h3>
+            <p class="mess show">Show Added!</p>
+            <div class="three-content">
+                <h5>Start Date and Time:</h5>
+                <input type="date" placeholder="Start Date">
+                <input type="time" placeholder="Start Time">
+                <h5>End Date and Time:</h5>
+                <input type="date" placeholder="End Date">
+                <input type="time" placeholder="End Time">
+                <h5>Price</h5>
+                <input type="number" placeholder="Price">
+                <h5>Screens</h5>
+                <input type="number" placeholder="Screens">
+            </div>
+            <a onclick="addShow()" style="display: block; margin: 30px auto; width: 30%;"
+                class="waves-effect waves-light btn">Add Show</a>
+        </div>
+    </div>
+
+    <script src="./js/api.js"></script>
+    <script>
+        let getMovies = () => {
+            var myHeaders = new Headers();
+            myHeaders.append("token", localStorage.getItem('admin'));
+
+            var requestOptions = {
+                method: 'GET',
+                headers: myHeaders,
+                redirect: 'follow'
+            };
+
+            fetch(api + "/movie", requestOptions)
+                .then(response => response.json())
+                .then(result => {
+                    console.log(result)
+                    renderMovies(result)
+                })
+                .catch(error => console.log('error', error));
+        }
+
+        let renderMovies = (data) => {
+            let one = document.querySelector('.one-content')
+            for (let i = 0; i < data.length; i++) {
+                let div = document.createElement('div')
+                div.innerHTML = `
+                    <p>${data[i].name}</p>
+                    <p>${data[i].lang}</p>
+                    <a onclick="selMovie('${data[i]._id}', this)" class="waves-effect waves-light btn">Select</a>
+                `
+                one.appendChild(div)
+            }
+        }
+
+        let prevMovie
+        let prevTheater
+        let movie
+        let theater
+        let maxScreens
+        let maxSeats
+
+        let selMovie = (id, ele) => {
+            movie = id
+            if (prevMovie)
+                prevMovie.classList.remove('selected')
+            ele.parentElement.classList.add('selected')
+            prevMovie = ele.parentElement
+        }
+
+        let getTheaters = () => {
+            var myHeaders = new Headers();
+            myHeaders.append("token", localStorage.getItem('admin'));
+
+            var requestOptions = {
+                method: 'GET',
+                headers: myHeaders,
+                redirect: 'follow'
+            };
+
+            fetch(api + "/theater", requestOptions)
+                .then(response => response.json())
+                .then(result => {
+                    console.log(result)
+                    renderTheaters(result)
+                })
+                .catch(error => console.log('error', error));
+        }
+
+        let renderTheaters = (data) => {
+            let two = document.querySelector('.two-content')
+            for (let i = 0; i < data.length; i++) {
+                let div = document.createElement('div')
+                div.innerHTML = `
+                    <p>${data[i].name}</p>
+                    <p>${data[i].location}</p>
+                    <a onclick="selTheater('${data[i]._id}', this, ${data[i].screens.length}, ${data[i].screens[0].seats})" class="waves-effect waves-light btn">Select</a>
+                `
+                two.appendChild(div)
+            }
+        }
+
+        let selTheater = (id, ele, len, seats) => {
+            theater = id
+            if (prevTheater)
+                prevTheater.classList.remove('selected')
+            ele.parentElement.classList.add('selected')
+            prevTheater = ele.parentElement
+            maxScreens = len
+            maxSeats = seats
+            console.log(maxSeats)
+        }
+
+
+        let inputs = document.querySelectorAll('.three-content > input')
+        let mess = document.querySelector('.mess')
+
+        let addShow = () => {
+            mess.classList.remove('show')
+            mess.classList.remove('err')
+
+            for (let i = 0; i < inputs.length; i++) {
+                if (inputs[i].value == "") {
+                    mess.innerHTML = `${inputs[i].placeholder} is required!`
+                    mess.classList.add('show')
+                    mess.classList.add('err')
+                    mess.scrollIntoView({
+                        behavior: "smooth"
+                    })
+                    return
+                }
+            }
+
+            if (!movie) {
+                mess.innerHTML = `Movie Not Selected!`
+                mess.classList.add('show')
+                mess.classList.add('err')
+                mess.scrollIntoView({
+                    behavior: "smooth"
+                })
+                return
+            }
+
+            if (!theater) {
+                mess.innerHTML = `Theater Not Selected!`
+                mess.classList.add('show')
+                mess.classList.add('err')
+                mess.scrollIntoView({
+                    behavior: "smooth"
+                })
+                return
+            }
+
+            if (inputs[5].value > maxScreens || inputs[5].value <= 0) {
+                mess.innerHTML = `Not enough Screens in Theater!`
+                mess.classList.add('show')
+                mess.classList.add('err')
+                mess.scrollIntoView({
+                    behavior: "smooth"
+                })
+                return
+            }
+
+            let screens = []
+            let seatsa = []
+
+            for (let i = 0; i < maxSeats; i++) {
+                seatsa.push(i + 1)
+            }
+
+            for (let i = 0; i < parseInt(inputs[5].value); i++) {
+                screens.push({
+                    name: `Screen ${i + 1}`,
+                    f_seats: seatsa
+                })
+            }
+
+            console.log(screens)
+
+            var myHeaders = new Headers();
+            myHeaders.append("token", localStorage.getItem('admin'));
+            myHeaders.append("Content-Type", "application/json");
+
+            var raw = {
+                "theater": theater,
+                "movie": movie,
+                "s_date": `${inputs[0].value}T${inputs[1].value}:00.000Z`,
+                "e_date": `${inputs[2].value}T${inputs[3].value}:00.000Z`,
+                "price": inputs[4].value,
+                "screens": screens,
+            };
+
+            console.log(raw)
+
+            let ok = true
+
+            var requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: JSON.stringify(raw),
+                redirect: 'follow'
+            };
+
+            fetch(api + "/show", requestOptions)
+                .then(response => {
+                    if (!response.ok) {
+                        ok = false;
+                    }
+                    return response.json()
+                })
+                .then(result => {
+                    if (!ok) {
+                        throw result;
+                    }
+                    console.log(result)
+                    mess.innerHTML = "Show added!"
+                    mess.classList.add('show')
+                    mess.scrollIntoView({
+                        behavior: "smooth"
+                    })
+                })
+                .catch(error => {
+                    console.log('error', error)
+                    mess.classList.add("err");
+                    mess.innerHTML = error["message"];
+                    mess.classList.add("show");
+                    mess.scrollIntoView({
+                        behavior: "smooth"
+                    })
+                });
+
+
+        }
+
+        getTheaters()
+        getMovies()
+    </script>
+</body>
+
+</html>

@@ -6,17 +6,12 @@ const { auth, adminAuth } = require('./verify');
 const router = express.Router()
 
 router.post('/', adminAuth, async (req, res) => {
-    let screensInfo = [];
-
-    req.body.screens.forEach(ele => {
-        screensInfo.push({ name: ele.name, seats: ele.seats });
-    });
 
     const theater = new Theater({
         name: req.body.name,
         type: req.body.type,
         location: req.body.location,
-        screens: screensInfo
+        screens: req.body.screens
     })
 
     try {

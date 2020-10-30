@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
+    <title>Document</title>
+    <style>
+        .mess {
+            text-align: center;
+            color: green;
+            margin: 20px;
+            display: none;
+        }
+
+        .show {
+            display: block;
+        }
+
+        .err {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 style="color: lightcoral; text-align: center; margin: 50px 0 100px 0;">Sign Up</h1>
+        <p class="mess"></p>
+        <div class="form">
+            <h5>Email</h5>
+            <input type="email" placeholder="Email">
+            <h5>Password</h5>
+            <input type="text" placeholder="Password">
+            <h5>Sex</h5>
+            <input type="text" placeholder="Sex">
+            <h5>Name</h5>
+            <input type="text" placeholder="Name">
+            <h5>DOB</h5>
+            <input type="date" placeholder="Date">
+        </div>
+        <a style="display: block; margin: 30px auto; width: 50%;" onclick="signUp()"
+            class="waves-effect waves-light btn">Sign Up</a>
+
+        <script src="./js/api.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+        <script>
+            let mess = document.querySelector('.mess')
+            let inputs = document.querySelectorAll('input')
+            let signUp = () => {
+                mess.classList.remove('show')
+                mess.classList.remove('err')
+
+                for (let i = 0; i < inputs.length; i++) {
+                    if (inputs[i].value == "") {
+                        mess.innerHTML = `${inputs[i].placeholder} is required!`
+                        mess.classList.add('show')
+                        mess.classList.add('err')
+                        return
+                    }
+                }
+
+                var myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+
+                var raw = {
+                    "email": inputs[0].value,
+                    "password": inputs[1].value,
+                    "sex": inputs[2].value,
+                    "name": inputs[3].value,
+                    "dob": `${inputs[4].value}T00:00:00.000Z`
+                };
+
+
+                let ok = true;
+
+                var requestOptions = {
+                    method: 'POST',
+                    headers: myHeaders,
+                    body: JSON.stringify(raw),
+                    redirect: 'follow'
+                };
+
+                fetch(api + "/customer/register", requestOptions)
+                    .then(response => {
+                        if (!response.ok) {
+                            ok = false;
+                        }
+                        return response.json()
+                    })
+                    .then(result => {
+                        if (!ok) {
+                            throw result;
+                        }
+                        console.log(result)
+                        mess.innerHTML = "Registered!"
+                        mess.classList.add('show')
+                    })
+                    .catch(error => {
+                        console.log('error', error)
+                        mess.classList.add("err");
+                        mess.innerHTML = error["message"];
+                        mess.classList.add("show");
+                    });
+            }
+        </script>
+    </div>
+</body>
+
+</html>
