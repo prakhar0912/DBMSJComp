@@ -8,7 +8,8 @@ const jwt = require('jsonwebtoken')
 const router = express.Router()
 
 //Validation
-const { registerValidation, loginValidation } = require('../validation')
+const { registerValidation, loginValidation } = require('../validation');
+const { custom } = require('@hapi/joi');
 
 
 
@@ -49,6 +50,21 @@ router.post('/register', async (req, res) => {
         res.json(err)
     }
 })
+
+
+router.patch('/', auth, async (req, res) => {
+
+    const customer = await Customer.findById(req.user._id)
+
+    customer.email = req.body.email
+    customer.sex = req.body.sex
+    customer.name = req.body.name
+
+    await customer.save()
+
+    res.status(200).json(customer)
+})
+
 
 
 router.get('/tickets', auth, async (req, res) => {

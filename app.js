@@ -12,7 +12,7 @@ const TicketRoute = require('./routes/ticket')
 const AdminRoute = require('./routes/admin')
 
 
-const app = express();
+const app = express()
 const uri = "mongodb://localhost:27017/testing"
 
 app.use(bodyParser.json())
