@@ -79,6 +79,19 @@ router.get('/tickets', auth, async (req, res) => {
     }
 })
 
+router.get('/spec', auth, async (req, res) => {
+    try {
+        const customer = await Customer.findById(req.user._id)
+        res.status(200)
+        res.json(customer)
+    }
+    catch (err) {
+        res.status(500)
+        res.json(err)
+    }
+
+})
+
 
 router.post('/login', async (req, res) => {
     const { error } = loginValidation(req.body)

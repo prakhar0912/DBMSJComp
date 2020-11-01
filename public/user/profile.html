@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
+    <title>Document</title>
+    <style>
+        .mess {
+            text-align: center;
+            color: green;
+            margin: 20px;
+            display: none;
+        }
+
+        .show {
+            display: block;
+        }
+
+        .err {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h3 style="text-align: center; color: lightcoral; margin: 50px auto;">Profile</h3>
+    <p class="mess"></p>
+    <div class="container">
+        <h5>Name</h5>
+        <input type="text" placeholder="Name">
+        <h5>Email</h5>
+        <input type="email" placeholder="Email">
+        <h5>Sex</h5>
+        <input type="text" placeholder="Gender">
+    </div>
+    <a style="display: block; margin: 30px auto; width: 300px;" onclick="upProfile()"
+        class="waves-effect waves-light btn">Update</a>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="./js/api.js"></script>
+    <script>
+        let mess = document.querySelector('.mess')
+        let inputs = document.querySelectorAll('input')
+        let upProfile = () => {
+            mess.classList.remove('show')
+            mess.classList.remove('err')
+
+            for (let i = 0; i < inputs.length; i++) {
+                if (inputs[i].value == "") {
+                    mess.innerHTML = `${inputs[i].placeholder} is required!`
+                    mess.classList.add('show')
+                    mess.classList.add('err')
+                    return
+                }
+            }
+
+            var myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+            myHeaders.append('token', localStorage.getItem('token'))
+
+            var raw = {
+                "name": inputs[0].value,
+                "email": inputs[1].value,
+                "sex": inputs[2].value,
+            };
+
+
+            let ok = true;
+
+            var requestOptions = {
+                method: 'PATCH',
+                headers: myHeaders,
+                body: JSON.stringify(raw),
+                redirect: 'follow'
+            };
+
+            fetch(api + "/customer/", requestOptions)
+                .then(response => {
+                    if (!response.ok) {
+                        ok = false;
+                    }
+                    return response.json()
+                })
+                .then(result => {
+                    if (!ok) {
+                        throw result;
+                    }
+                    console.log(result)
+                    mess.innerHTML = "Updated!"
+                    mess.classList.add('show')
+                })
+                .catch(error => {
+                    console.log('error', error)
+                    mess.classList.add("err");
+                    mess.innerHTML = error["message"];
+                    mess.classList.add("show");
+                });
+        }
+
+        let getProfile = () => {
+
+            var myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+            myHeaders.append('token', localStorage.getItem('token'))
+
+
+            var requestOptions = {
+                method: 'GET',
+                headers: myHeaders,
+                redirect: 'follow'
+            };
+
+            fetch(api + "/customer/spec", requestOptions)
+                .then(response => {
+                    return response.json()
+                })
+                .then(result => {
+                    console.log(result)
+                    inputs[0].value = result["name"]
+                    inputs[1].value = result["email"]
+                    inputs[2].value = result['sex']
+                })
+                .catch(error => {
+                    console.log('error', error)
+                });
+        }
+
+        getProfile()
+    </script>
+</body>
+
+</html>
